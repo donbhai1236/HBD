@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confetti Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #confetti {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti"></canvas>
+    <script>
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confettiColors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createConfetti() {
+            const x = randomInRange(0, canvas.width);
+            const y = -10;
+            const angle = randomInRange(0, Math.PI * 2);
+            const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            const radius = randomInRange(5, 15);
+            const speed = randomInRange(2, 5);
+
+            return { x, y, angle, color, radius, speed };
+        }
+
+        function drawConfetti(confetti) {
+            ctx.beginPath();
+            ctx.arc(confetti.x, confetti.y, confetti.radius, 0, Math.PI * 2);
+            ctx.fillStyle = confetti.color;
+            ctx.fill();
+        }
+
+        function updateConfetti(confetti) {
+            confetti.x += Math.cos(confetti.angle) * confetti.speed;
+            confetti.y += Math.sin(confetti.angle) * confetti.speed;
+            confetti.angle += 0.05;
+            if (confetti.y > canvas.height) {
+                confetti.y = -10;
+            }
+        }
+
+        const confettiPieces = [];
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (Math.random() < 0.05) {
+                confettiPieces.push(createConfetti());
+            }
+
+            for (let i = 0; i < confettiPieces.length; i++) {
+                const confetti = confettiPieces[i];
+                drawConfetti(confetti);
+                updateConfetti(confetti);
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
